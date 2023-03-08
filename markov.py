@@ -14,7 +14,7 @@ def open_and_read_file(file_path):
     return contents 
 
 
-def make_chains(text_string):
+def make_chains(text_string, n):
     """Take input text as string; return dictionary of Markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -42,15 +42,24 @@ def make_chains(text_string):
     chains = {}
    
     words = text_string.split()
+    # print(words)
 
-    for i in range(len(words) - 2):
+    # fake_words = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+    # n = 3 
+
+    for i in range(len(words) - n):
+        ngram_list = []
+        for j in range(i, i+n):
+            ngram_list.append(words[j]) 
+        ngram_str = ' '.join(ngram_list) 
+        # print(ngram_str)
         
-        bigram_tuple = (words[i], words[i+1])
+        # bigram_tuple = (words[i], words[i+1])
 
-        if bigram_tuple in chains:
-            chains[bigram_tuple].append(words[i+2]) 
+        if ngram_str in chains:
+            chains[ngram_str].append(words[i+n]) 
         else:
-            chains[bigram_tuple] = [words[i+2]] 
+            chains[ngram_str] = [words[i+n]] 
 
 
     return chains
@@ -62,15 +71,20 @@ def make_text(chains):
     words = [] 
 
     chains_keys = list(chains.keys()) 
-    random_key = choice(chains_keys) 
-    new_key = (random_key[1], choice(chains[random_key]))  
+    initial_key = choice(chains_keys) 
+    initial_key_list = initial_key.split(' ')
+    new_key = ' '.join(initial_key_list[1:]) + ' ' + choice(chains[initial_key])
+    # new_key = (random_key[1], choice(chains[random_key]))  
 
     while new_key in chains: 
         words.append(choice(chains[new_key])) 
-        new_key = (new_key[1], choice(chains[new_key])) 
+        new_key_list = new_key.split(' ')
+        new_key = ' '.join(new_key_list[1:]) + ' ' + choice(chains[new_key])
+        # new_key = (new_key[1], choice(chains[new_key])) 
     
     return ' '.join(words)
 
+user_input = input("What value do you want to use for n? ") 
 
 # input_path = 'gettysburg.txt'
 input_path = sys.argv[1]
@@ -78,7 +92,7 @@ input_path = sys.argv[1]
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text)
+chains = make_chains(input_text, int(user_input))
 
 # Produce random text
 random_text = make_text(chains)
