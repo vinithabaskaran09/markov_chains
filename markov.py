@@ -40,8 +40,18 @@ def make_chains(text_string):
     """
 
     chains = {}
+   
+    words = text_string.split()
 
-    # your code goes here
+    for i in range(len(words) - 2):
+        
+        bigram_tuple = (words[i], words[i+1])
+
+        if bigram_tuple in chains:
+            chains[bigram_tuple].append(words[i+2]) 
+        else:
+            chains[bigram_tuple] = [words[i+2]] 
+
 
     return chains
 
@@ -49,10 +59,16 @@ def make_chains(text_string):
 def make_text(chains):
     """Return text from chains."""
 
-    words = []
+    words = [] 
 
-    # your code goes here
+    chains_keys = list(chains.keys()) 
+    random_key = choice(chains_keys) 
+    new_key = (random_key[1], choice(chains[random_key]))  
 
+    while new_key in chains: 
+        words.append(choice(chains[new_key])) 
+        new_key = (new_key[1], choice(chains[new_key])) 
+    
     return ' '.join(words)
 
 
